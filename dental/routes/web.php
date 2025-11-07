@@ -4,6 +4,8 @@ use Inertia\Inertia;
 use App\Models\appointment;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\AppointmentController;
@@ -28,11 +30,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/appointment',[AppointmentController::class,'index'])->name('appointment.index');
+Route::get('/appointments',[AppointmentController::class,'index'])->name('appointment.index');
 
 Route::get('/appointment/create',[AppointmentController::class,'create'])->name('appointment.create');
 
 Route::get('/appointments/{appointment}/edit',[AppointmentController::class,'edit'])->name('appointment.edit');
+
+Route::get('/appointments/{appointment}',[AppointmentController::class,'show'])->name('appointment.show');
 
 ROute::post('/appointments/guest',[AppointmentController::class,'guestBooking'])->name('appointments.guest');
 
@@ -46,4 +50,11 @@ Route::delete('/appointments/{appointment}',[AppointmentController::class,'destr
 //all the core routes with methods of service created
 Route::resource('services', ServiceController::class);
 
+//all core crud routes and methods of users
+Route::resource('users',UserController::class);
+
+//reception side
+// Route::get('/reception',[Rece])
+
+Route::get('/admin',[AdminController::class,'index']);
 require __DIR__.'/auth.php';

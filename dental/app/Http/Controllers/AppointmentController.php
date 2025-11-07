@@ -33,8 +33,11 @@ class AppointmentController extends Controller
     }
 
     //show individual appointments
-    public function show(Request $request){
-      Inertia::render("appointment");
+    public function show(string $id){
+        $user=User::findOrFail($id);
+      Inertia::render("Appointment/Show",[
+     'user'=>$user,
+    ]);
     }
 
    
