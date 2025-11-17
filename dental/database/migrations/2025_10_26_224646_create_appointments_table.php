@@ -18,7 +18,9 @@ return new class extends Migration
             $table->dateTime('appointment_time');
             $table->string('status')->default('pending'); // pending, approved, cancelled, completed
             $table->text('notes')->nullable();
-
+            $table->enum('checkin_status', ['not_checked_in', 'checked_in'])
+              ->default('not_checked_in');
+            $table->timestamp('checked_in_at')->nullable();
             $table->timestamps();
         });
     }

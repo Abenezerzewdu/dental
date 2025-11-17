@@ -220,14 +220,14 @@ function logout() {
                             <span>Roles</span>
                         </Link>
 
-                        <Link
+                        <!-- <Link
                             href="/admin/settings"
                             class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#A4D6E133]"
                             @click="open = false"
                         >
                             <i class="fas fa-cog w-5"></i>
                             <span>Settings</span>
-                        </Link>
+                        </Link> -->
                     </nav>
                 </div>
             </aside>

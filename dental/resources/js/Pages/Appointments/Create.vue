@@ -3,9 +3,15 @@ import { ref, reactive } from "vue";
 import { router } from "@inertiajs/vue3";
 import { usePage } from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import { ComponentIcon } from "lucide-vue-next";
+import ReceptionLayout from "@/Layouts/ReceptionLayout.vue";
+import { computed } from "vue";
+import PatientLayout from "@/Layouts/PatientLayout.vue";
 const { props } = usePage();
 const services = props.services || [];
-
+function back() {
+    router.visit("/");
+}
 // Step tracking
 const step = ref(1);
 
@@ -33,11 +39,18 @@ const nextStep = () => {
 
 const prevStep = () => step.value--;
 
+const roles = computed(() => page.props.auth.user?.roles || []);
+const isAdmin = computed(() => roles.value.includes("admin"));
+const isReception = computed(() => roles.value.includes("reception"));
+
 const submitForm = () => {
     router.post("/appointments/guest", form, {
         onSuccess: () => {
             alert("🎉 Your appointment has been successfully booked!");
-            router.visit("/appointments");
+            // if (isAdmin) {
+            //     router.visit("/appointments");
+            // }
+
             step.value = 1;
             Object.keys(form).forEach((k) => (form[k] = ""));
         },
@@ -49,7 +62,7 @@ const submitForm = () => {
 </script>
 
 <template>
-    <admin-layout>
+    <Component :is="is_Admin ? AdminLayout : PatientLayout">
         <div
             class="max-w-lg mx-auto p-6 bg-[#E5F3F3] shadow-xl rounded-2xl mt-12 border border-[#A4D6E1]"
         >
@@ -106,7 +119,10 @@ const submitForm = () => {
                     {{ errors.step1 }}
                 </p>
 
-                <div class="flex justify-end">
+                <div class="flex justify-end mt-6">
+                    <button @click="back" class="btn-secondary p-10">
+                        Back
+                    </button>
                     <button @click="nextStep" class="btn-primary">Next</button>
                 </div>
             </div>
@@ -170,7 +186,7 @@ const submitForm = () => {
                 </div>
             </div>
         </div>
-    </admin-layout>
+    </Component>
 </template>
 
 <style scoped>

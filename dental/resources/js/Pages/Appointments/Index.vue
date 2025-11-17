@@ -3,10 +3,44 @@ import { Link, usePage, router } from "@inertiajs/vue3";
 import { computed } from "vue";
 import dayjs from "dayjs";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import ReceptionLayout from "@/Layouts/ReceptionLayout.vue";
+import { ref } from "vue";
+
+const selectedFilter = ref("all"); // all | today | future
+
+const filteredAppointments = computed(() => {
+    if (!appointments.value) return [];
+
+    const today = dayjs().startOf("day");
+
+    return appointments.value.filter((a) => {
+        const date = dayjs(a.appointment_time).startOf("day");
+
+        if (selectedFilter.value === "all") return true;
+
+        if (selectedFilter.value === "today") {
+            return date.isSame(today, "day");
+        }
+
+        if (selectedFilter.value === "future") {
+            return date.isAfter(today, "day");
+        }
+
+        return true;
+    });
+});
+
 // Get appointments with patient & service
 const appointments = computed(() => usePage().props.appointments || []);
+// roles
+const page = usePage();
+const filter = computed(() => usePage().props.filter || "all");
 
-// ✅ Human-readable date formatter
+const roles = computed(() => page.props.auth.user?.roles || []);
+const isAdmin = computed(() => roles.value.includes("admin"));
+const isReception = computed(() => roles.value.includes("reception"));
+
+// Human-readable date formatter
 function humanizeDate(dateString) {
     const today = dayjs().startOf("day");
     const target = dayjs(dateString).startOf("day");
@@ -21,7 +55,7 @@ function humanizeDate(dateString) {
     return target.format("dddd, MMM D");
 }
 
-// ✅ Confirm + Delete appointment
+// Confirm + Delete appointment
 function confirmDelete(id) {
     if (confirm("Are you sure you want to delete this appointment?")) {
         router.delete(`/appointments/${id}`, {
@@ -30,11 +64,81 @@ function confirmDelete(id) {
         });
     }
 }
+
+function applyFilter(type) {
+    router.get(
+        "/appointments",
+
+        { filter: type },
+        {
+            preserveScroll: true,
+            preserveState: true,
+        }
+    );
+}
+
+function checkIn(id) {
+    router.post(`/appointments/${id}/checkin`, {
+        preserveScroll: true,
+        onSuccess: () => router.reload({ only: ["stats"] }), // reload only stats
+    });
+}
 </script>
 
 <template>
-    <AdminLayout>
+    <component :is="isAdmin ? AdminLayout : ReceptionLayout">
         <div class="p-8 max-w-5xl mx-auto text-[#2C3E50]">
+            <!-- FILTER BUTTONS -->
+            <div class="flex gap-3 mb-5">
+                <button
+                    @click="applyFilter('all')"
+                    class="px-4 py-2 rounded-lg border"
+                    :class="
+                        filter === 'all'
+                            ? 'bg-[#4E8C8C] text-white'
+                            : 'bg-white'
+                    "
+                >
+                    All
+                </button>
+
+                <button
+                    @click="applyFilter('today')"
+                    class="px-4 py-2 rounded-lg border"
+                    :class="
+                        filter === 'today'
+                            ? 'bg-[#4E8C8C] text-white'
+                            : 'bg-white'
+                    "
+                >
+                    Today
+                </button>
+
+                <button
+                    @click="applyFilter('future')"
+                    class="px-4 py-2 rounded-lg border"
+                    :class="
+                        filter === 'future'
+                            ? 'bg-[#4E8C8C] text-white'
+                            : 'bg-white'
+                    "
+                >
+                    Future
+                </button>
+
+                <button
+                    @click="applyFilter('checked')"
+                    class="px-4 py-2 rounded-lg border"
+                    :class="
+                        filter === 'checked'
+                            ? 'bg-[#4E8C8C] text-white'
+                            : 'bg-white'
+                    "
+                >
+                    Checked-In
+                </button>
+            </div>
+
             <h1 class="text-3xl font-bold mb-6 text-[#4E8C8C]">
                 Appointments Dashboard
             </h1>
@@ -42,6 +146,7 @@ function confirmDelete(id) {
             <!-- Book New Appointment Button -->
             <div class="flex justify-end mb-6">
                 <Link
+                    v-if="isAdmin"
                     href="/appointment/create"
                     class="px-4 py-2 bg-[#4E8C8C] text-white rounded-lg shadow-md hover:bg-[#A4D6E1] hover:text-[#2C3E50] transition"
                 >
@@ -120,16 +225,38 @@ function confirmDelete(id) {
                                     Edit
                                 </Link>
                                 <button
+                                    v-if="isAdmin"
                                     @click="confirmDelete(appointment.id)"
                                     class="text-red-600 hover:text-red-800 font-medium"
                                 >
                                     Delete
                                 </button>
+                                <button
+                                    v-if="
+                                        isReception &&
+                                        appointment.checkin_status ===
+                                            'not_checked_in'
+                                    "
+                                    @click="checkIn(appointment.id)"
+                                    class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                >
+                                    Check In
+                                </button>
+
+                                <span
+                                    v-if="
+                                        appointment.checkin_status ===
+                                        'checked_in'
+                                    "
+                                    class="px-2 py-1 bg-green-100 text-green-700 rounded"
+                                >
+                                    Checked In
+                                </span>
                             </td>
                         </tr>
 
                         <!-- Empty state -->
-                        <tr v-if="appointments.length === 0">
+                        <tr v-if="filteredAppointments.length === 0">
                             <td
                                 colspan="5"
                                 class="text-center text-gray-500 p-6"
@@ -141,7 +268,7 @@ function confirmDelete(id) {
                 </table>
             </div>
         </div>
-    </AdminLayout>
+    </component>
 </template>
 
 <style scoped>

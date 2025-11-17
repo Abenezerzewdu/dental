@@ -15,6 +15,10 @@ const form = useForm({
 function submit() {
     form.put(`/appointments/${props.appointment.id}`);
 }
+
+const roles = computed(() => page.props.auth.user?.roles || []);
+const isAdmin = computed(() => roles.value.includes("admin"));
+const isReception = computed(() => roles.value.includes("reception"));
 </script>
 
 <template>

@@ -1,12 +1,12 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-
+import Checkbox from "@/Components/Checkbox.vue";
+import GuestLayout from "@/Layouts/GuestLayout.vue";
+import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import TextInput from "@/Components/TextInput.vue";
+import { Head, Link, useForm } from "@inertiajs/vue3";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 defineProps({
     canResetPassword: {
         type: Boolean,
@@ -17,14 +17,14 @@ defineProps({
 });
 
 const form = useForm({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     remember: false,
 });
 
 const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
+    form.post(route("login"), {
+        onFinish: () => form.reset("password"),
     });
 };
 </script>
@@ -32,7 +32,11 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Log in" />
-
+        <div class="text-center mt-8 mb-6">
+            <h1 class="text-3xl font-bold text-white drop-shadow-sm">
+                <Link href="/">Dental</Link>
+            </h1>
+        </div>
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
         </div>
@@ -79,6 +83,9 @@ const submit = () => {
             </div>
 
             <div class="mt-4 flex items-center justify-end">
+                <SecondaryButton
+                    ><Link href="/register">Register</Link></SecondaryButton
+                >
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"

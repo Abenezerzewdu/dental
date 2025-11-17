@@ -1,21 +1,21 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-
+import GuestLayout from "@/Layouts/GuestLayout.vue";
+import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import TextInput from "@/Components/TextInput.vue";
+import { Head, Link, useForm } from "@inertiajs/vue3";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 const form = useForm({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
 });
 
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
+    form.post(route("register"), {
+        onFinish: () => form.reset("password", "password_confirmation"),
     });
 };
 </script>
@@ -23,7 +23,11 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Register" />
-
+        <div class="text-center mt-8 mb-6">
+            <h1 class="text-3xl font-bold text-white drop-shadow-sm">
+                <Link href="/">Dental</Link>
+            </h1>
+        </div>
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="name" value="Name" />
@@ -93,6 +97,9 @@ const submit = () => {
             </div>
 
             <div class="mt-4 flex items-center justify-end">
+                <SecondaryButton
+                    ><Link href="/login">Login</Link></SecondaryButton
+                >
                 <Link
                     :href="route('login')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"

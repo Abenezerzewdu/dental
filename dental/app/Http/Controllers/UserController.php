@@ -53,13 +53,16 @@ $validated=$request->validate(
     }
         //store validated data
 
-        User::create([
+       $user= User::create([
             'name'=>$validated['name'],
             'email'=>$validated['email'],
             'password'=>bcrypt($validated['password']),
             'phone'=>$validated['phone']??null,
             'photo'=>$photoPath,
         ]);
+
+          $user->assignRole('reception');
+
         //redirect to page we want to navigate
         return redirect()->route('users.index')->with('success',"created a user successfully !!");
     }

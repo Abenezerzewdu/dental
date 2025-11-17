@@ -24,6 +24,7 @@
         "@inertiajs/core": "^2.2.15",
         "chart.js": "^4.5.1",
         "dayjs": "^1.11.19",
+        "lucide-vue-next": "^0.553.0",
         "vue-chartjs": "^5.3.3"
     }
 }
