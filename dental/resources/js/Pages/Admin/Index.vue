@@ -6,15 +6,21 @@ import ChartWrapper from "@/Components/ChartWrapper.vue";
 
 const {
     service,
-    appointmentsPerMonth,
+    // appointmentsPerMonth,
     users,
     appointments,
     services,
     userGrowthLabels,
     userGrowthData,
 } = usePage().props;
-const serviceLabels = service.map((s) => s.name);
-const serviceCounts = service.map((s) => s.appointments_count);
+const serviceLabels = Array.isArray(service) ? service.map((s) => s.name) : [];
+const serviceCounts = Array.isArray(service)
+    ? service.map((s) => s.appointments_count)
+    : [];
+
+const rawData = usePage().props.appointmentsPerMonth || {};
+
+const appointmentsPerMonth = JSON.parse(JSON.stringify(rawData));
 
 const stats = [
     { label: "Total Appointments", value: appointments },
@@ -97,9 +103,7 @@ const barData = {
         {
             label: "Appointments",
             backgroundColor: "#4E8C8C",
-            data: months.map(
-                (_, index) => appointmentsPerMonth[index + 1] || 0
-            ),
+            data: months.map((_, i) => appointmentsPerMonth[i + 1] ?? 0),
         },
     ],
 };

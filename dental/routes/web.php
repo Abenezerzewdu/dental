@@ -11,6 +11,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\RoleAssignController;
 use App\Models\Appointment as ModelsAppointment;
 use GuzzleHttp\Middleware;
 
@@ -73,7 +74,9 @@ Route::get('/debug-role', function() {
 Route::post('/appointments/{appointment}/checkin', 
     [AppointmentController::class, 'checkIn'])
     ->middleware(['role:reception']);
-// Route::get("/reception/overview",[Rec])
+
+ Route::get("/admin/roles",[RoleAssignController::class,'index']);
+ Route::post('/admin/role/assign',[RoleAssignController::class,'assignRole'])->name('admin.roles.assign');
 Route::get("/",[HomeController::class,'index']);
 
 Route::get('/dashboardp',[HomeController::class,'dashboard'])->name('patient.dashboard');

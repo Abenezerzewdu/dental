@@ -212,11 +212,12 @@ function logout() {
                         </Link>
 
                         <Link
-                            href="/appointments"
+                            href="/admin/roles"
                             class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#A4D6E133]"
                             @click="open = false"
                         >
                             <i class="fas fa-calendar-check w-5"></i>
+
                             <span>Roles</span>
                         </Link>
 
